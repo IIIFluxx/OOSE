@@ -1,0 +1,51 @@
+Bharath Sukesh - 19982634 - Criteria Response.
+====================================
+1. Clear and distinct package/class/interface/method responsibilities
+	
+	My selection for splitting up classes were heavily influenced by the State & Observer Pattern structures themselves. The State pattern consists of a Context class that is public to all, and what people from Earth would deal with, and separate from the rest of the State Pattern bar knowing about the State interface.
+	
+	So I had a class for the Context ~ Rover, a class for the State Interface ~ RoverState, as well as three State classes that all implement the RoverState interface, thereby providing a three unique 'sets of behaviour' ~ each state having its own state-specific behaviour e.g. what happens when the Rover is driving, and what happens when it is stationary. The Observer pattern classes are similar in that Earth would be the Subject/Event Source, and would generate
+	events to be sent over to the Observers which is our Rover class. It communicates via an Observer interface, which would notify all 'subscribed observers' meaning the Rover will be notified upon an event occurrence, which entails a change in some system state. Thus I had a class for the Observer interface which the Rover would implement and override all its four methods (each method being a 'notification/signal' method). The two interfaces in my assignment are part of both State & Observer patterns, and are responsible for reflecting both the current and changes to the current state. 
+
+	As for packages, unlike Assignment 1, I felt there wasn't too much room for separation of concerns via packages any more than separating the API Classes that could possibly be used on many different Rover software systems / spacecraft systems for example in accordance to their Sensors, Polling and Communication structures. I separated this from the rest of the system as the API Classes felt more like "utility classes"/in their own category, as opposed what I had to deal with which is the Rover's system/behaviour, and working *alongside* those API classes. I personally decided against separating what is currently in the Rover package such as splitting into States & Observer, because I felt again that primarily revolved around the Rover's software system and similar responsibilities that work in unison for helping Earth communicating to the Rover, rather than distinguishing between the two.
+	
+====================================
+====================================
+2. Appropriate error handling
+	
+	As opposed to Assignment #1, *quantity* wise, this assignment had less areas for errors occurring as it did not have any user input from neither arguments nor the terminal. This was the case because the software we designed is not for Humans, rather for the Rover, to process things coming in from Earth. The error handling that I did cater for was to ensure no exceptions can occur and stall the Rover, as well, humanity can't be spending that much money to have a Rover die to an exception :P
+
+	This included ensuring that the input from Earth is valid via argument length, making sure they provide appropriate numerical values specifically for Driving and Turning, and enforcing numeric restrictions for driving and turning based on the Rover's capability (-180 to 180 degree turns and forward driving). 
+	These checks are all to ensure that Earth's commands can't muck up the flow of events of the Rover by failing to provide appropriate input.
+
+====================================
+====================================
+3. Implementation of Dependency Injection
+	
+	To avoid issues with maintainability, the main thing I watched out for was to make sure that I made all relevant objects for the Rover in the 'Injector class' which for me is my RoverApp.java. This meant making all my API Class objects and passing them into the Rover. This means less coupling between the Rover class and these API objects, ensuring that we can test them in isolation if needed, and making everything as decoupled as they possibly can be.
+	
+	This also means that should people on Earth want to perform say, any diagnostic tests on all existing Rovers, it can do so on the API Class objects themselves in isolation, rather than having to deal with and run a specific Rover class (as the API Class objects are passed in when the Rover is initialised); should there be a problem, we can replace any ONE class object, without any other classes of the same type being affected or, interfering. I did end up having `new` in my Rover class however, as part of the State pattern, as I myself felt that the States are only applicable to the Rover, and defines the Mars Rover's behaviour, any other space rover may have different behaviour and characteristics; this exclusivity was the reasoning behind why I wanted to create my State objects within the Rover class. Similarly the entire State Pattern is exclusive to the Rover, meaning that Earth cannot interact with it, all it can do is slightly interact with the Observer Pattern by providing a Command (which the Event Source takes in). 
+	
+====================================
+====================================
+4. State Pattern
+
+	The State Pattern allows me to define what can happen in what scenario the Rover is currently in. My States were one for Driving, one for Stopped and one representing the Rover undergoing Soil Analysis. These States allow Earth to do different functionalities at different times (and some functionalities at any given point e.g. taking a photo and making a environmental status report). 
+	
+	As soon as Earth sends a command and it gets relayed to the Rover, the Rover can just call that command regardless of what state it is in and output the outcome, irrespective of if it can perform (valid command does the task) or not (prints an error). All Earth needs to do is send in a command and it does not need to bother with what happens behind the scenes ~ all it gets is some output returned indicating the status of the command from the state that the Rover is in.
+	The state specific behaviour is handled by the Rover's State classes, allowing the states to refer back to one shared object and altering the current state if need be e.g. to stop when the Rover reaches the target distance (thereby making a transition from Driving --> Stopped state). This avoids the situation where Earth needing to know what state the Rover is in before making a calculated decision on what command to send. As a result, I found the main goal in my use of the State Pattern was to reduce the amount of complexity in our code.
+	
+	
+====================================
+====================================
+5. Observer Pattern
+	
+	The Observer pattern classes are implemented simply such that Earth would be the Subject/Event Source, and would generate events to be sent over to the Observers, which in our case is the Rover. It does this via the Observer interface, which would notify all 'subscribed observers' meaning the Rover will be notified upon an event occurrence, which entails a change in some system state. This observer interface means that if we had some other subscriber to the events e.g. a Communication Tower that logs the Rover's each and every activity, it would also be able to get notified without needing to do a mass of additional coding to set that up. This allows for different *kinds* of Observers in that: a different observer, say the Communication Tower both know about the Subject, and when it is updated, but apart from that; from Earth's (subject) POV, nothing much has changed structurally ~ it just alerts all Observers as before. So in summary, I structured it as: The subject/event source being in RoverApp, the (current) sole observer being the Rover.
+	
+====================================
+====================================
+6. UML
+	
+	My UML gives an idea of how my system works ~ it's not a standalone system, rather one that manages the Rover's behaviour and states. Earth would only be able to interact with the RoverApp via providing commands, and then the RoverApp commands actions from there on; my packages show how one class is not tightly coupled with another as the State interface/classes know nothing about the Observer interface and vice versa. The API Classes know nothing about any of the rest of the system - they are simply "utility classes" ~ provide some functionality used by the rest of the Rover's software system. My subject/event source can have 1 or more Observers ~ showcasing multiplicity.
+	
+	

@@ -1,0 +1,41 @@
+Bharath Sukesh - 19982634 - Criteria Responses.
+1. Use of Containers
+	- What containers I used, in what situations, and why? 
+	
+	The Composite Pattern mainly revolves us wanting to be able to represent an arbitrarily complex tree; i.e.e not just 'a fixed Tree structure', rather any kind of Tree Structure that can represent any kind of hierarchical data. Thus we want to be able to represent our network and be able to add to it whenever we like; thus I used a Set, specifically a LinkedHashSet as the main container representing the System Tree. 
+	
+	I chose a Set, because it allows me to iterate over it easily, doesn't allow for duplicates. I chose a LinkedHashSet specifically because it maintains the insertion order, meaning that for reading and writing, it will insert into the Set in the order that I read in the file, and thus will also write out to a file in the same stored order that it was read in. So a LinkedHashSet provided me with ordering and prevention of duplicates. I also used Maps for two main reasons, one being in City.java to insert each Node of the Tree network into, as this provided me with a really easy way of searching whether a node was already existing within the network and allowing/disallowing based on the preexistence of a Node in the Tree Network. I also used Maps to store the power values of each Leaf node, as I figured being able to search each value by providing a Key (e.g. "em") String and linking each Key String to a Power Value was a really easy way to store and retrieve its contents.
+	
+	My Suburb stores its children by storing a LinkedHashSetSet of CityComponent's; also for the same reasons mentioned previously for City.java. I can do several operations on the Set/Suburb's children, like summing up the power values of one Suburb/Composite Node's child leaf nodes.
+
+====================================
+====================================
+2. Clear and distinct package/class/interface/method responsibilities
+	
+	Packages follow the traditional MVC format - the Model contains the main representation of Data, and all dealings with Data like File IO are performed in the Model. The Composite Pattern demonstrates a common superclass, composite nodes and leaf nodes. My common superclass is called CityComponent and this allows me to view Composite Nodes and Leaf Nodes as the same object, and store both types in Containers, without needing to know what type of object we are dealing with - we just know we deal with CityComponent's. The model classes themselves only contain information that define that object, and have no interlinking with any other part of the program. My Controller class takes in a City (model class), and its methods are mainly utility methods related to storing output information and calculating. The option interface and 4 File related classes are just part of the Strategy Pattern implementation explained further below. I tried to split up my methods throughout this program to prevent them from being overly big, and to separate each method with a purpose, and minimise code repetition. 
+	
+====================================
+====================================
+3. Appropriate error handling
+	
+	My error handling was a bit messy considering the few small details I had to account for to ensure I could get appropriate error handling for the program. The main error handling associated with this program is handling arguments from the user, as well as File IO related error handling. My error handling for user command-line arguments was by using many if statements to ensure - first, I obeyed the specification, and second, no function within the rest of the system can be called unless the arguments provided are valid. This stops users from calling methods in a completely abnormal order, or calling methods without actually giving the right inputs they require. Once valid arguments were submitted by the user, I handled any errors within the input files, with some further if statements to check for abnormal data. I performed this in an organised manner, such that I made two methods for parsing the provided file, and performing checking for whether the data is unique in certain scenarios, and if the data itself is valid for the system. Should any of the two parsing methods encounter an error, I threw a FileIOException which would be passed all the way up to main() and passed to the user. I tried to be thorough with the test cases and forcing errors, and hence making sure all were handled albeit at the cost of the code looking a little unpleasant.
+
+====================================
+====================================
+4. Strategy Pattern
+	
+	I figured the user having 4 choices to run the program in a different manner, was the right time to utilise the Strategy Pattern to split. The main scenario to utilise the Strategy Pattern is when some part of a program needs to execute a particular task, but this task has many variations that can be executed. Once hte user decides what they want to do, the code shouldn't need to have several if-else or one huge switch case statement checking what the user input was; the program doesn't really care about this, rather we implement a mechanism that decides which task to run i.e. we have a separation between deciding which task to run, and actually running it. The user provides -g, -r, -w, & -d arguments from command-line, and instead of checking exactly which one is chosen from the user manually, we decouple those choices and make our code simpler by having an Option interface, and several methods that implement that interface. Not only does this make our code simpler, but it also ties into the idea of a Service Class i.e. where some classes are not about storing data, but about dividing up the logic of the system. The four subclasses that implement the Option interface each do a specific task that the program requires of it i.e. whether it be reading or writing which is more associated with model loading from files/File IO, or displaying and generating which don't deal with any user input.
+
+	
+====================================
+====================================
+5. Composite Pattern
+	
+	The Composite Pattern sets up a program and utilises recursive aggregation, and as a whole allows us to represent any arbitrarily complex tree, where the Composite Nodes can contain some information general to all nodes in the System, and Leaf Nodes which provide properties that are specific to that Leaf.
+	If we had to distinguish between Composite and Leaf objects in a Tree structure, then this makes the code more complex, as you'd have to deal with operations with each type separately, and thus this also makes the code more error prone. The Composite Pattern allowing us to treat them as the same under a unified Component interface allows us to manipulate an object as if it were just any other object, without having to know or 'care' about what it is under the Component type (Leaf or Composite); we can just manipulate a group/container of Component objects. To reiterate, without this, we couldn't easily represent the Tree structure of Suburbs and Buildings so easily - we'd potentially need a Container for each of the type, in order to iterate over them, and perform any operations on them i.e. accessing their specific data; it gets messy. The developer also doesn't need to constantly check they're calling the right method for the right type of object (and hence we also don't need to make methods with essentially the same code but catering for a different object type); rather it  can create one method and call that method over the entire structure of objects.	
+====================================
+====================================
+6. UML
+	
+	My UML describes how my system looks like and the connections between the Model, Controller and View. The Model doesn't know anything about the classes in View or Controller; the Controller knows about all three; and the View is only used by the Controller. It demonstrates the Containers that hold Objects within hold a 1:m relationship where a container can hold one to many of that object type. Inheritance relationships are shown for the Strategy Pattern implementation, as well as the Composite Pattern class implementation.
+	

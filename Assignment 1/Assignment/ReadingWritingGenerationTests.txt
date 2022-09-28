@@ -1,0 +1,153 @@
+Generated
+Written to ctrl2.getCity().writeFile("resources/RandomGenFile.txt");
+--File--
+	q
+	w,q
+	e,w
+	r,e
+	t,r
+	one,q,ee=27.39,de=279.92,s=610.21,em=759.09,h=985.25,dm=182.17,ea=207.04,da=782.12
+	two,q,ee=463.12,de=14.89,s=108.72,em=130.33,h=261.88,dm=946.5,ea=159.24,da=675.45
+	three,q,ee=652.73,de=191.93,s=834.63,em=119.56,h=697.7,dm=434.2,ea=164.13,da=717.07
+
+--Display--
+	Root added: q
+	Suburb (C) name: q
+		 Suburb (C) name: w Parent:<q>
+		 Suburb (C) name: e Parent:<w>
+		 Suburb (C) name: r Parent:<e>
+		 Suburb (C) name: t Parent:<r>
+			  Suburb (L) name: one || Parent: q.
+			  Suburb (L) name: two || Parent: q.
+			  Suburb (L) name: three || Parent: q.
+
+	Total power: {ee=1143.24, de=486.74, s=1553.56, em=1008.98, h=1944.8300000000002, dm=1562.8700000000001, ea=530.41, da=2174.6400000000003}
+---
+Read generated file
+--Display--
+	Suburb (C) name: q
+     Suburb (C) name: w Parent:<q>
+     Suburb (C) name: e Parent:<w>
+     Suburb (C) name: r Parent:<e>
+     Suburb (C) name: t Parent:<r>
+          Suburb (L) name: one || Parent: q.
+          Suburb (L) name: two || Parent: q.
+          Suburb (L) name: three || Parent: q.
+
+Total power: {ee=1143.24, de=486.74, s=1553.56, em=1008.98, h=1944.8300000000002, dm=1562.8700000000001, ea=530.41, da=2174.6400000000003}
+	
+	
+Written to another file ctrl2.getCity().writeFile("resources/Random.txt");
+--File--
+	q
+	w,q
+	e,w
+	r,e
+	t,r
+	one,q,ee=27.39,de=279.92,s=610.21,em=759.09,h=985.25,dm=182.17,ea=207.04,da=782.12
+	two,q,ee=463.12,de=14.89,s=108.72,em=130.33,h=261.88,dm=946.5,ea=159.24,da=675.45
+	three,q,ee=652.73,de=191.93,s=834.63,em=119.56,h=697.7,dm=434.2,ea=164.13,da=717.07
+
+=================================
+
+Now we investigate whether changing the order does anything to Reading Writing Displaying - should only affect Displaying.
+
+
+file.txt has buildings in before new suburbs.
+city
+northside,city
+southside,city
+building1,northside,h=675.015,dm=550.8
+suburb,southside
+building2,southside,s=444.2,em=540.1,da=97.9
+street,suburb
+building3,southside,ee=10956
+-------------------------
+Reading and Displaying
+
+	Suburb (C) name: city
+		 Suburb (C) name: northside Parent:<city>
+		 Suburb (C) name: southside Parent:<city>
+			  Suburb (L) name: building1 || Parent: northside.
+		 Suburb (C) name: suburb Parent:<southside>
+			  Suburb (L) name: building2 || Parent: southside.
+		 Suburb (C) name: street Parent:<suburb>
+			  Suburb (L) name: building3 || Parent: southside.
+
+	Total power: {ee=10956.0, de=0.0, s=444.2, em=540.1, h=675.015, dm=550.8, ea=0.0, da=97.9}
+	
+Reading that ^^ & Writing to file. 
+	> Read file == Write file.
+	> Maintains the order at which the file is READ in, so order affects how the display looks. <----------- 
+	However if we want to do -r -w, we want the file to look the same/display to look the same.
+	Thus the order in which read in affects the order which is displayed, but reading order == writing order (both use LinkedHashMap so makes sense).
+	
+	
+As for Generation:
+	- What we generate, saved to a file, gives a display.
+	- That file loaded back in, gives the same display, and writing that to a file (-r -w) gives the same file; again read == write.
+
+
+	As for displaying, only works as good as the file input order.
+		My solution to this was to have another LinkedHashMap, add Composite, add Building, add Composite, add Building in that order.
+		Composite
+			Composite
+				Building
+			Composite
+	
+	but no idea how that'd work.
+=======================
+
+Argument Handling Notes:
+
+Possibilities:
+-**g** -d === generate, display
+
+-**g** -w === generate, write to file
+
+-**r** -d === read, display
+
+-**r** -w === read, write to file
+--------------
+[R//G]//[W//D]
+
+	`["arg 0"] ["arg 1"] [filename]"`
+	`["arg 0"] ["arg 1"] [filename]"`
+	`["arg 0"] [filename] ["arg 2"] [filename]"`
+---------------
+1- It is an error if neither -g nor -r are provided -- i.e. **arg1** must be "r" or "w"
+
+	Check if arg0 == "r" || "g"	
+
+2- It is an error if both are provided i.e. "r" "g" provided 
+
+
+	- check if first arg = r, second arg = g || first arg = g, second arg = r
+	
+	Case 1: if first arg = r, second arg =g
+	`["arg 0"] [filename] ["arg 2"]"`
+		^					  ^
+	
+	Case 2: if first arg=g, second arg =r
+	`["arg 0"] ["arg 1"] [filename]"`
+		^          ^
+
+
+3- It is an error if -r || -w is not followed by a filename
+
+	-r <filename> -w <filename>
+	-r <filename> -g 
+	-g -w <filename>
+	
+	So check if args[i] == -r, i+1 must be filename?
+
+
+
+4 - It is an error if both filenames are the same when -r and -w are provided
+
+	-r <filename> -w <filename>
+	0	1		   2	3
+	check if args[1] == args[3] || args [3] == args[1]
+
+
+	

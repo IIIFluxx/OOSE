@@ -1,0 +1,32 @@
+Types of commands: D, T, P, E, S.
+
+	// #1: 
+		D & T both need values after - D [num] & T [num]: 											// ---- DONE via NumberFormatExc.
+		i.e. Length MUST = 2.  																		// ---- DONE VIA ArrayIndexExc.
+			
+			"D" // -- leaving out a number - which is making sure our D command is valid			// ---- DONE
+			"T" // -- leaving out a number - which is making sure our E command is valid			// ---- DONE
+				So if command = D or T, make sure it is followed by something ^^, and it = a number.
+				
+			
+			"T aaa",		// need to make sure second part = number.								// ---- DONE
+			"D aaa",		// need to make sure second part = number.									^
+			
+			"D -2",			// Can only be positive - error to handle								// ^
+			"T -181",		// Edge case - error to handle											// ^
+			"T 181",		// Edge case - error to handle											// ^
+			
+			
+			
+	P, E, S - length must be 1.			
+			"P aaa",		// Error to handle
+			"E dfojdfg",	// Error to handle
+			"S a",			// Error to handle
+			
+	T/D length must be 2
+			"D - 500" 		// Error to handle
+	
+	Case checking 
+			"d" "t" "p" "e" "s"																		// ---- DONE.
+			
+			

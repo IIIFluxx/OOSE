@@ -1,0 +1,74 @@
+Question (a): Refactor the SecuritySystem class to conform to the Dependency Injection pattern, without altering its basic responsibilities.
+
+The idea with the Dependency Injection pattern is that we desire to remove all the hardcoded class dependencies, i.e. any occurrences of "new" or any static class reference.
+
+The SecuritySystem class still has dependencies on a few classes i.e. MotionSensor, HeatSensor etc. What we can do is instead of making new objects inside the SecuritySystem 
+constructor, we can inject those dependencies into the object i.e. we can pass those objects in via the Constructor's parameters, so effectively the constructor now takes in 
+whatever types/objects that it needs. 
+
+This also applies to the EmailSystem; instead of having a static class reference i.e. EmailSystem.sendMessage(); we can pass in an EmailSystem object via the Constructor also, 
+and call the sendMessage() method on the imported EmailSystem object. I would also have sendMessage() be non-static. 
+
+As for editing code outside of the SecuritySystem class, in our injector code (whether that be in main() or controllers), we'd grab the Sensor Bundle, from the Hardware directly,
+and then create a MotionSensor, HeatSensor, EmailSystem & Alarm, and then pass all those into a SecuritySystem object we create. This effectively means that instead creating all 
+those within SecuritySystem, we create it outside, and pass it in. We can perform Observer Pattern within or outside the SecuritySystem class depending on where you wish to do it. 
+
+
+
+public class SecuritySystem implements SensorObserver
+{
+	private MotionSensor motionSensor;
+	private HeatSensor heatSensor;
+	private Alarm alarm;
+	private boolean armed;
+
+	public SecuritySystem(MotionSensor inM, HeatSensor inH, EmailSystem inE, Alarm inA)
+	{
+		this.motionSensor = inM;
+		this.heatSensor = inH;
+		this.emailSystem = inE;
+		this.alarm = inA;
+		this.armed = false;
+		this.motionSensor.addSensorObserver(this);
+		this.heatSensor.addSensorObserver(this);
+	}
+	
+	public void setArmed(boolean newArmed)
+	{
+		armed = newArmed;
+		emailSystem.sendMessage("Armed: " + newArmed);
+	}
+	
+	@Override
+	public void sensorDetection(Sensor s)
+	{
+		if(armed)
+		{
+			alarm.ring();
+			emailSystem.sendMessage("Sensor detection for " + s.toString());
+		}
+	}
+	
+}
+
+Question (b): Provide an example of the injector code, showing how to create an instance of SecuritySystem from scratch.
+
+public static void main(String[] args)
+{
+	Hardware hw = new Hardware();
+	SensorBundle sens = hw.getSensors(); // Gets bundle from hardware directly.
+	// ASSUMPTION: SensorBundle is only used to get the Sensors from within.
+	
+	// Create objects
+	MonitorSensor ms = new MonitorSensor();
+	HeatSensor hs = new HeatSensor();
+	EmailSystem es = new EmailSystem();
+	Alarm al = new Alarm();
+	
+	ms = sens.getMotionSensor();
+	hs = sens.getHeatSensor();
+	
+	SecuritySystem secSys = new SecuritySystem(ms,hs,es,al);
+	// Call methods on secSys however we like....
+	// Should make other methods non-static because there would be no need to have it be static.
+}
